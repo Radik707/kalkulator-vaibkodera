@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калькулятор стоимости сайта</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0f0f13;
+      color: #ffffff;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    /* Заголовок и описание */
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .header h1 {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .header p {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: #a0a0b0;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    /* Кнопки выбора типа */
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 60px;
+    }
+
+    .option-btn {
+      background: #1a1a24;
+      color: #ffffff;
+      border: 2px solid #2a2a38;
+      border-radius: 14px;
+      padding: 22px 36px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      min-width: 180px;
+    }
+
+    .option-btn:hover {
+      background: #23233a;
+      border-color: #7c5cfc;
+      transform: translateY(-2px);
+    }
+
+    .option-btn.active {
+      background: #7c5cfc;
+      border-color: #7c5cfc;
+      color: #ffffff;
+    }
+
+    /* Блок результата */
+    .result {
+      text-align: center;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.35s, transform 0.35s;
+    }
+
+    .result.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .result-label {
+      font-size: 1rem;
+      color: #a0a0b0;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .result-price {
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #a78bfa, #7c5cfc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .result-desc {
+      font-size: 1rem;
+      color: #6e6e88;
+      max-width: 400px;
+      line-height: 1.5;
+    }
+
+    /* Подпись внизу */
+    .footer {
+      margin-top: 80px;
+      font-size: 0.85rem;
+      color: #3a3a50;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Калькулятор стоимости сайта</h1>
+    <p>Узнайте примерную стоимость вашего проекта за несколько секунд — просто выберите нужный тип.</p>
+  </div>
+
+  <div class="options">
+    <button class="option-btn" onclick="showPrice('landing', this)">Лендинг</button>
+    <button class="option-btn" onclick="showPrice('shop', this)">Интернет-магазин</button>
+    <button class="option-btn" onclick="showPrice('bot', this)">Телеграм-бот</button>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-label">Стоимость от</div>
+    <div class="result-price" id="price"></div>
+    <div class="result-desc" id="desc"></div>
+  </div>
+
+  <div class="footer">Точная цена обсуждается индивидуально · Средние сроки: 3–14 дней</div>
+
+  <script>
+    // Данные по каждому типу проекта
+    const prices = {
+      landing: {
+        price: '10 000 ₽',
+        desc: 'Одностраничный сайт под ваш продукт или услугу с формой заявки и адаптивной вёрсткой.'
+      },
+      shop: {
+        price: '60 000 ₽',
+        desc: 'Полноценный магазин с каталогом, корзиной и подключением платёжной системы.'
+      },
+      bot: {
+        price: '20 000 ₽',
+        desc: 'Телеграм-бот с нужной логикой: запись, оплата, рассылка или автоответы.'
+      }
+    };
+
+    function showPrice(type, btn) {
+      // Сбрасываем активный класс со всех кнопок
+      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const data = prices[type];
+      document.getElementById('price').textContent = data.price;
+      document.getElementById('desc').textContent = data.desc;
+
+      const result = document.getElementById('result');
+      result.classList.remove('visible');
+      // Небольшая задержка для повторного срабатывания анимации
+      requestAnimationFrame(() => requestAnimationFrame(() => result.classList.add('visible')));
+    }
+  </script>
+
+</body>
+</html>
