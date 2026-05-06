@@ -796,6 +796,22 @@
     .section-body, .hero { padding: 28px 20px; }
     .final { padding: 36px 20px; }
 
+    /* Безопасный перенос слов во всех заголовках */
+    h1, h2, h3 { overflow-wrap: break-word; word-break: break-word; }
+
+    /* Hero h1: clamp даёт 48px на 375px — слишком много, переопределяем */
+    /* На 375px: 8.5vw = 32px, "Автоматизирую" ≈ 258px < 309px контейнера */
+    .hero h1 { font-size: clamp(28px, 8.5vw, 42px); }
+
+    /* Подзаголовок hero */
+    .hero .sub { font-size: 16px; }
+
+    /* Section h2: clamp даёт 36px на 375px, уменьшаем */
+    .section-title-block h2 { font-size: clamp(24px, 7vw, 34px); }
+
+    /* Финальный заголовок: clamp даёт 40px на 375px, уменьшаем */
+    .final h2 { font-size: clamp(26px, 8vw, 36px); }
+
     /* Шапка-штамп — в столбик */
     .stamp { flex-direction: column; gap: 4px; }
     .stamp .right { gap: 10px; }
@@ -832,6 +848,16 @@
 
     /* Шаги */
     .step { padding: 24px 20px; }
+
+    /* Шапка каждой секции — убираем лишний горизонтальный padding */
+    .section-head { padding: 10px 16px; }
+
+    /* min-height у заголовков карточек нужен только для 4-кол сетки */
+    .who-card h3 { min-height: auto; font-size: 22px; }
+
+    /* Подзаголовки — чуть компактнее */
+    .final .sub { font-size: 16px; }
+    .section-title-block .lead { font-size: 15px; }
 
     /* Футер — 1 колонка */
     .foot { grid-template-columns: 1fr; padding: 32px 16px; }
