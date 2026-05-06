@@ -1,188 +1,1124 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Калькулятор стоимости сайта</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Вайбкодер — Автоматизация под ключ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #f4f1ea;
+    --paper-2: #ece8de;
+    --ink: #1a1a17;
+    --ink-2: #2c2a25;
+    --muted: #807d74;
+    --line: #d8d3c4;
+    --line-2: #c9c3b1;
+    --accent: #c4b896;
+    --accent-2: #8a7f5f;
 
-    body {
-      background-color: #0f0f13;
-      color: #ffffff;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-    }
+    --font: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.5;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
 
-    /* Заголовок и описание */
-    .header {
-      text-align: center;
-      margin-bottom: 60px;
-    }
+  /* Сетка — фоновые вертикальные направляющие */
+  .grid-bg {
+    background-image: linear-gradient(to right, rgba(0,0,0,0.035) 1px, transparent 1px);
+    background-size: calc(100% / 12) 100%;
+  }
 
-    .header h1 {
-      font-size: clamp(2rem, 6vw, 3.5rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.15;
-      margin-bottom: 16px;
-    }
+  .page {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 28px 40px 120px;
+  }
 
-    .header p {
-      font-size: clamp(1rem, 2.5vw, 1.25rem);
-      color: #a0a0b0;
-      max-width: 520px;
-      line-height: 1.6;
-    }
+  /* Верхняя строка-штамп */
+  .stamp {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 14px;
+    margin-bottom: 28px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .stamp .left { color: var(--ink); font-weight: 500; }
+  .stamp .right { display: flex; gap: 18px; }
 
-    /* Кнопки выбора типа */
-    .options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      justify-content: center;
-      margin-bottom: 60px;
-    }
+  /* Рамка секции */
+  .section {
+    border: 1px solid var(--ink);
+    margin-bottom: 28px;
+    background: var(--paper);
+    position: relative;
+  }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--ink);
+    padding: 12px 24px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .section-head .num { color: var(--muted); }
+  .section-body { padding: 56px 48px; }
 
-    .option-btn {
-      background: #1a1a24;
-      color: #ffffff;
-      border: 2px solid #2a2a38;
-      border-radius: 14px;
-      padding: 22px 36px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, transform 0.15s;
-      min-width: 180px;
-    }
+  /* Примитивы wireframe */
+  .wf-line {
+    height: 8px;
+    background: var(--line);
+    border-radius: 1px;
+    margin: 6px 0;
+  }
+  .wf-line.short { width: 35%; }
+  .wf-line.med { width: 60%; }
+  .wf-line.long { width: 85%; }
+  .wf-line.full { width: 100%; }
+  .wf-line.dark { background: var(--ink); }
+  .wf-line.thin { height: 4px; opacity: 0.6; }
 
-    .option-btn:hover {
-      background: #23233a;
-      border-color: #7c5cfc;
-      transform: translateY(-2px);
-    }
+  /* Заглушка изображения */
+  .wf-img {
+    border: 1px solid var(--line-2);
+    background: linear-gradient(135deg, transparent 49%, var(--line-2) 49% 51%, transparent 51%);
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .wf-img span { background: var(--paper); padding: 3px 8px; }
 
-    .option-btn.active {
-      background: #7c5cfc;
-      border-color: #7c5cfc;
-      color: #ffffff;
-    }
+  /* Кнопки — строго прямоугольные, без скруглений */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 14px 22px;
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 0;
+    letter-spacing: -0.01em;
+  }
+  .btn.solid { background: var(--ink); color: var(--paper); }
+  .btn.solid:hover { background: var(--ink-2); }
+  .btn.sm { padding: 10px 16px; font-size: 13px; }
+  .btn .arrow { font-family: var(--mono); font-size: 14px; line-height: 1; }
 
-    /* Блок результата */
-    .result {
-      text-align: center;
-      min-height: 140px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 0.35s, transform 0.35s;
-    }
+  /* Тег / чип */
+  .tag {
+    display: inline-block;
+    border: 1px solid var(--line-2);
+    padding: 5px 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: transparent;
+  }
 
-    .result.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* Надбровная метка */
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 18px;
+    height: 1px;
+    background: var(--ink);
+    display: inline-block;
+  }
 
-    .result-label {
-      font-size: 1rem;
-      color: #a0a0b0;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
+  h1, h2, h3, h4 {
+    font-family: var(--font);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    margin: 0;
+    line-height: 1.05;
+  }
 
-    .result-price {
-      font-size: clamp(2.5rem, 8vw, 4.5rem);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #a78bfa, #7c5cfc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+  /* Навбар */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--ink);
+    background: var(--paper);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    border: 1px solid var(--ink);
+    padding: 6px 12px;
+  }
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .nav-links a { color: inherit; text-decoration: none; }
+  .nav-links a:hover { color: var(--ink); }
 
-    .result-desc {
-      font-size: 1rem;
-      color: #6e6e88;
-      max-width: 400px;
-      line-height: 1.5;
-    }
+  /* Hero */
+  .hero { padding: 96px 48px 80px; }
+  .hero h1 {
+    font-size: clamp(48px, 6.5vw, 92px);
+    font-weight: 400;
+    max-width: 16ch;
+    margin-bottom: 24px;
+    letter-spacing: -0.035em;
+  }
+  .hero h1 em { font-style: normal; color: var(--muted); }
+  .hero .sub {
+    font-size: 18px;
+    color: var(--ink-2);
+    max-width: 56ch;
+    margin-bottom: 40px;
+    line-height: 1.5;
+  }
+  .hero .cta-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 80px;
+  }
 
-    /* Подпись внизу */
-    .footer {
-      margin-top: 80px;
-      font-size: 0.85rem;
-      color: #3a3a50;
-      text-align: center;
-    }
-  </style>
+  /* Полоса иконок под Hero */
+  .hero-strip {
+    border-top: 1px solid var(--ink);
+    margin: 0 -48px -80px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .hero-strip .cell {
+    padding: 24px 20px;
+    border-right: 1px solid var(--line-2);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 140px;
+  }
+  .hero-strip .cell:last-child { border-right: none; }
+  .hero-strip .cell .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .hero-strip .cell .ico {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+  }
+  .hero-strip .cell .ico svg { width: 100%; height: 100%; }
+  .hero-strip .cell .name {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-top: auto;
+  }
+
+  /* Секция «Для кого» */
+  .who-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line-2);
+    border-left: 1px solid var(--line-2);
+  }
+  .who-card {
+    border-right: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: transparent;
+    min-height: 360px;
+  }
+  .who-card .who-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .who-card .who-img { width: 100%; aspect-ratio: 5 / 4; margin-bottom: 4px; }
+  .who-card h3 { font-size: 26px; font-weight: 500; letter-spacing: -0.02em; }
+  .who-card .who-desc { color: var(--ink-2); font-size: 14px; line-height: 1.5; }
+  .who-card .who-pain {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-2);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Заголовочный блок секции */
+  .section-title-block { margin-bottom: 56px; max-width: 720px; }
+  .section-title-block h2 {
+    font-size: clamp(36px, 4.5vw, 60px);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+  .section-title-block h2 em { font-style: normal; color: var(--muted); }
+  .section-title-block .lead { font-size: 17px; color: var(--ink-2); line-height: 1.5; max-width: 60ch; }
+
+  /* Калькулятор */
+  .calc {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .calc-left, .calc-right {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 32px 28px;
+  }
+  .calc h3 {
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .calc-question {
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+    line-height: 1.2;
+  }
+  .calc-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--line-2);
+    border-left: 1px solid var(--line-2);
+  }
+  .calc-opt {
+    border-right: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    cursor: pointer;
+    background: transparent;
+    user-select: none;
+  }
+  .calc-opt:hover { background: var(--paper-2); }
+  .calc-opt .check {
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--ink);
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+  }
+  .calc-opt.selected { background: var(--paper-2); }
+  .calc-opt.selected .check { background: var(--ink); }
+  .calc-opt.selected .check::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--paper);
+  }
+
+  .calc-block { margin-top: 32px; }
+  .calc-block-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+  .calc-block-head .label {
+    font-size: 13px;
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .calc-block-head .value { font-size: 14px; font-weight: 500; }
+
+  /* Слайдер */
+  .slider-wrap { position: relative; margin: 22px 0 10px; }
+  .slider-track { height: 1px; background: var(--line-2); position: relative; }
+  .slider-fill {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    background: var(--ink);
+    transition: width 0.15s;
+  }
+  .slider-knob {
+    width: 14px; height: 14px;
+    background: var(--ink);
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: left 0.15s;
+  }
+  input[type="range"].real-slider {
+    position: absolute;
+    inset: -10px 0;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+    height: 30px;
+    margin: 0;
+  }
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* Дополнительные опции */
+  .calc-extras { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .calc-extra {
+    border: 1px solid var(--line-2);
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .calc-extra:hover { border-color: var(--ink); }
+  .calc-extra.active { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+
+  .calc-right { display: flex; flex-direction: column; background: var(--paper-2); }
+  .price { margin: 8px 0 32px; }
+  .price .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .price .value {
+    font-size: clamp(40px, 5vw, 56px);
+    font-weight: 400;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    margin-bottom: 8px;
+    transition: opacity 0.2s;
+  }
+  .price .range { font-size: 13px; color: var(--muted); font-family: var(--mono); }
+
+  .calc-meta { display: flex; flex-direction: column; margin-bottom: 24px; }
+  .calc-meta-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line-2);
+    font-size: 14px;
+  }
+  .calc-meta-row:first-child { border-top: 1px solid var(--line-2); }
+  .calc-meta-row .k {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .calc-meta-row .v { font-weight: 500; }
+  .calc-cta { margin-top: auto; padding-top: 24px; }
+
+  /* Шаги */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .step {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-height: 280px;
+  }
+  .step-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--line-2);
+    padding-bottom: 14px;
+  }
+  .step-num { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; color: var(--muted); }
+  .step-glyph { width: 24px; height: 24px; }
+  .step h3 { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.15; }
+  .step .desc { font-size: 14px; color: var(--ink-2); line-height: 1.55; }
+  .step .meta {
+    margin-top: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-top: 14px;
+    border-top: 1px solid var(--line-2);
+  }
+
+  /* Финальный CTA */
+  .final {
+    padding: 96px 48px;
+    background: var(--ink);
+    color: var(--paper);
+    text-align: left;
+  }
+  .final .eyebrow { color: var(--paper-2); }
+  .final .eyebrow::before { background: var(--paper); }
+  .final h2 {
+    font-size: clamp(40px, 6vw, 80px);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    max-width: 18ch;
+    margin-bottom: 24px;
+  }
+  .final .sub { font-size: 18px; color: var(--paper-2); max-width: 50ch; margin-bottom: 40px; line-height: 1.5; }
+  .final .btn { border-color: var(--paper); color: var(--paper); }
+  .final .btn.solid { background: var(--paper); color: var(--ink); }
+  .final-cta-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+
+  /* Футер */
+  .foot {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 32px;
+    padding: 40px 24px;
+    border-top: 1px solid var(--ink);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .foot .col h4 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+  .foot .col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+  .foot .brand-name { font-family: var(--mono); font-size: 14px; color: var(--ink); margin-bottom: 8px; }
+
+  /* === Кнопка «Рассчитать стоимость» (uiverse / vinodjangid07) === */
+  .Btn {
+    width: 240px;
+    height: 52px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(to right,#77530a,#ffd277,#77530a,#77530a,#ffd277,#77530a);
+    background-size: 250%;
+    background-position: left;
+    color: #ffd277;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition-duration: 1s;
+    overflow: hidden;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .Btn::before {
+    position: absolute;
+    content: "РАССЧИТАТЬ СТОИМОСТЬ";
+    color: #ffd277;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 97%;
+    height: 90%;
+    border-radius: 8px;
+    transition-duration: 1s;
+    background-color: rgba(0, 0, 0, 0.842);
+    background-size: 200%;
+  }
+  .Btn:hover { background-position: right; transition-duration: 1s; }
+  .Btn:hover::before { background-position: right; transition-duration: 1s; }
+  .Btn:active { transform: scale(0.95); }
+
+  /* === Кнопка «Написать в Telegram» (uiverse / marcelodolza) === */
+  .button {
+    --primary: #ff5569;
+    --neutral-1: #f7f8f7;
+    --neutral-2: #e7e7e7;
+    --radius: 14px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+    border: none;
+    box-shadow: 0 0.5px 0.5px 1px rgba(255,255,255,0.2), 0 10px 20px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.05);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    transition: all 0.3s ease;
+    min-width: 240px; padding: 20px; height: 60px;
+    font-family: var(--font);
+    font-size: 16px; font-weight: 600;
+    color: var(--ink);
+    background: var(--neutral-1);
+  }
+  .button:hover { transform: scale(1.02); box-shadow: 0 0 1px 2px rgba(255,255,255,0.3), 0 15px 30px rgba(0,0,0,0.3), 0 10px 3px -3px rgba(0,0,0,0.04); }
+  .button:active { transform: scale(1); box-shadow: 0 0 1px 2px rgba(255,255,255,0.3), 0 10px 3px -3px rgba(0,0,0,0.2); }
+  .button:after { content:""; position:absolute; inset:0; border-radius:var(--radius); border:2.5px solid transparent; background: linear-gradient(var(--neutral-1), var(--neutral-2)) padding-box, linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.45)) border-box; z-index:0; transition: all 0.4s ease; }
+  .button:hover::after { transform: scale(1.05, 1.1); box-shadow: inset 0 -1px 3px 0 rgba(255,255,255,1); }
+  .button::before { content:""; inset:7px 6px 6px 6px; position:absolute; background: linear-gradient(to top, var(--neutral-1), var(--neutral-2)); border-radius:30px; filter: blur(0.5px); z-index:2; }
+  .state p { display:flex; align-items:center; justify-content:center; margin:0; }
+  .state .icon { position:absolute; left:0; top:0; bottom:0; margin:auto; transform: scale(1.25); transition: all 0.3s ease; display:flex; align-items:center; justify-content:center; }
+  .state .icon svg { overflow: visible; }
+  .outline { position:absolute; border-radius:inherit; overflow:hidden; z-index:1; opacity:0; transition: opacity 0.4s ease; inset:-2px -3.5px; }
+  .outline::before { content:""; position:absolute; inset:-100%; background: conic-gradient(from 180deg, transparent 60%, white 80%, transparent 100%); animation: spin 2s linear infinite; animation-play-state: paused; }
+  @keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
+  .button:hover .outline { opacity:1; }
+  .button:hover .outline::before { animation-play-state: running; }
+  .state p span { display:block; opacity:0; animation: slideDown 0.8s ease forwards calc(var(--i) * 0.03s); }
+  .button:hover p span { opacity:1; animation: wave 0.5s ease forwards calc(var(--i) * 0.02s); }
+  .button:focus p span { opacity:1; animation: disapear 0.6s ease forwards calc(var(--i) * 0.03s); }
+  @keyframes wave { 30%{opacity:1;transform:translateY(4px)} 50%{opacity:1;transform:translateY(-3px);color:var(--primary)} 100%{opacity:1;transform:translateY(0)} }
+  @keyframes slideDown { 0%{opacity:0;transform:translateY(-20px) translateX(5px) rotate(-90deg);color:var(--primary);filter:blur(5px)} 30%{opacity:1;transform:translateY(4px);filter:blur(0)} 50%{opacity:1;transform:translateY(-3px)} 100%{opacity:1;transform:translateY(0)} }
+  @keyframes disapear { from{opacity:1} to{opacity:0;transform:translateX(5px) translateY(20px);color:var(--primary);filter:blur(5px)} }
+  .state--default .icon svg { animation: land 0.6s ease forwards; }
+  .button:hover .state--default .icon { transform: rotate(45deg) scale(1.25); }
+  .button:focus .state--default svg { animation: takeOff 0.8s linear forwards; }
+  .button:focus .state--default .icon { transform: rotate(0) scale(1.25); }
+  @keyframes takeOff { 0%{opacity:1} 60%{opacity:1;transform:translateX(70px) rotate(45deg) scale(2)} 100%{opacity:0;transform:translateX(160px) rotate(45deg) scale(0)} }
+  @keyframes land { 0%{transform:translateX(-60px) translateY(30px) rotate(-50deg) scale(2);opacity:0;filter:blur(3px)} 100%{transform:translateX(0) translateY(0) rotate(0);opacity:1;filter:blur(0)} }
+  .state--default .icon:before { content:""; position:absolute; top:50%; height:2px; width:0; left:-5px; background: linear-gradient(to right, transparent, rgba(0,0,0,0.5)); }
+  .button:focus .state--default .icon:before { animation: contrail 0.8s linear forwards; }
+  @keyframes contrail { 0%{width:0;opacity:1} 8%{width:15px} 60%{opacity:0.7;width:80px} 100%{opacity:0;width:160px} }
+  .state { padding-left:29px; z-index:2; display:flex; position:relative; }
+  .state--default span:nth-child(4) { margin-right:5px; }
+  .state--sent { display:none; }
+  .state--sent svg { transform: scale(1.25); margin-right:8px; }
+  .button:focus .state--default { position:absolute; }
+  .button:focus .state--sent { display:flex; }
+  .button:focus .state--sent span { opacity:0; animation: slideDown 0.8s ease forwards calc(var(--i) * 0.2s); }
+  .button:focus .state--sent .icon svg { opacity:0; animation: appear 1.2s ease forwards 0.8s; }
+  @keyframes appear { 0%{opacity:0;transform:scale(4) rotate(-40deg);color:var(--primary);filter:blur(4px)} 30%{opacity:1;transform:scale(0.6);filter:blur(1px)} 50%{opacity:1;transform:scale(1.2);filter:blur(0)} 100%{opacity:1;transform:scale(1)} }
+
+  /* Прокрутка к калькулятору */
+  .Btn[data-scroll] { text-decoration: none; }
+
+  @media (max-width: 980px) {
+    .who-grid, .steps { grid-template-columns: 1fr; }
+    .calc { grid-template-columns: 1fr; }
+    .hero-strip { grid-template-columns: repeat(2, 1fr); }
+    .hero-strip .cell { border-bottom: 1px solid var(--line-2); }
+    .foot { grid-template-columns: 1fr 1fr; }
+    .page { padding: 16px 16px 80px; }
+    .section-body, .hero, .final { padding: 56px 24px; }
+    .nav-links { display: none; }
+  }
+</style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Калькулятор стоимости сайта</h1>
-    <p>Узнайте примерную стоимость вашего проекта за несколько секунд — просто выберите нужный тип.</p>
+<div class="page">
+
+  <div class="stamp">
+    <div class="left">Вайбкодер — Автоматизация / v1.0</div>
+    <div class="right"><span>5 секций</span><span>1240 grid</span><span>ru</span></div>
   </div>
 
-  <div class="options">
-    <button class="option-btn" onclick="showPrice('landing', this)">Лендинг</button>
-    <button class="option-btn" onclick="showPrice('shop', this)">Интернет-магазин</button>
-    <button class="option-btn" onclick="showPrice('bot', this)">Телеграм-бот</button>
-  </div>
+  <!-- ========== 01 HERO ========== -->
+  <section class="section" id="hero">
+    <div class="section-head">
+      <span>01 / Hero</span>
+      <span class="num">scroll ↓</span>
+    </div>
 
-  <div class="result" id="result">
-    <div class="result-label">Стоимость от</div>
-    <div class="result-price" id="price"></div>
-    <div class="result-desc" id="desc"></div>
-  </div>
+    <div class="nav">
+      <div class="nav-logo">[ Вайбкодер ]</div>
+      <nav class="nav-links">
+        <a href="#who">Для кого</a>
+        <a href="#calc">Калькулятор</a>
+        <a href="#how">Как работает</a>
+        <a href="#cta">Контакты</a>
+      </nav>
+      <a href="#cta" class="btn sm">Связаться</a>
+    </div>
 
-  <div class="footer">Точная цена обсуждается индивидуально · Средние сроки: 3–14 дней</div>
+    <div class="hero grid-bg">
+      <div class="eyebrow">Автоматизация под ключ</div>
+      <h1>Автоматизирую ручной труд <em>и возвращаю время жизни.</em></h1>
+      <div class="sub">
+        Таблицы, ручные расчёты и хаотичная систематизация — уходят. Боты, скрипты и автоматизация под ключ — остаются. Один звонок — и рутина работает сама.
+      </div>
+      <div class="cta-row">
+        <button class="Btn" onclick="document.getElementById('calc').scrollIntoView({behavior:'smooth'})" aria-label="Рассчитать стоимость"></button>
+      </div>
 
-  <script>
-    // Данные по каждому типу проекта
-    const prices = {
-      landing: {
-        price: '10 000 ₽',
-        desc: 'Одностраничный сайт под ваш продукт или услугу с формой заявки и адаптивной вёрсткой.'
-      },
-      shop: {
-        price: '60 000 ₽',
-        desc: 'Полноценный магазин с каталогом, корзиной и подключением платёжной системы.'
-      },
-      bot: {
-        price: '20 000 ₽',
-        desc: 'Телеграм-бот с нужной логикой: запись, оплата, рассылка или автоответы.'
-      }
-    };
+      <!-- Иконки-метафоры: что умеем -->
+      <div class="hero-strip">
+        <div class="cell">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          </div>
+          <div class="label">01</div>
+          <div class="name">Боты</div>
+        </div>
+        <div class="cell">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,17 9,11 13,15 21,7"/><polyline points="14,7 21,7 21,14"/></svg>
+          </div>
+          <div class="label">02</div>
+          <div class="name">Отчёты</div>
+        </div>
+        <div class="cell">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18"/><line x1="3" y1="3" x2="21" y2="21"/></svg>
+          </div>
+          <div class="label">03</div>
+          <div class="name">Парсеры</div>
+        </div>
+        <div class="cell">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="7,3 7,21" stroke-dasharray="2,2"/></svg>
+          </div>
+          <div class="label">04</div>
+          <div class="name">CRM-связки</div>
+        </div>
+        <div class="cell">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,21 3,3 21,3"/><polyline points="7,17 11,13 14,16 20,8"/></svg>
+          </div>
+          <div class="label">05</div>
+          <div class="name">Дашборды</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    function showPrice(type, btn) {
-      // Сбрасываем активный класс со всех кнопок
-      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+  <!-- ========== 02 ДЛЯ КОГО ========== -->
+  <section class="section" id="who">
+    <div class="section-head">
+      <span>02 / Для кого</span>
+      <span class="num">3 портрета</span>
+    </div>
 
-      const data = prices[type];
-      document.getElementById('price').textContent = data.price;
-      document.getElementById('desc').textContent = data.desc;
+    <div class="section-body">
+      <div class="section-title-block">
+        <div class="eyebrow">Аудитория</div>
+        <h2>Если вы тонете <em>в таблицах и ручных расчётах</em> — это для вас.</h2>
+        <div class="lead">
+          Три типа клиентов, которым автоматизация даёт самое большое плечо — меньше рутины, больше результата.
+        </div>
+      </div>
 
-      const result = document.getElementById('result');
-      result.classList.remove('visible');
-      // Небольшая задержка для повторного срабатывания анимации
-      requestAnimationFrame(() => requestAnimationFrame(() => result.classList.add('visible')));
+      <div class="who-grid">
+        <div class="who-card">
+          <div class="who-num">01 / Профиль</div>
+          <div class="wf-img who-img"><span>портрет</span></div>
+          <h3>Предприниматель</h3>
+          <div class="who-desc">Малый бизнес 1–10 человек. Считает выручку в Excel, теряет заказы в Telegram/WhatsApp, склад — в голове.</div>
+          <div class="who-pain">боль: всё вручную, нет цифр</div>
+        </div>
+
+        <div class="who-card">
+          <div class="who-num">02 / Профиль</div>
+          <div class="wf-img who-img"><span>портрет</span></div>
+          <h3>Бизнесмен</h3>
+          <div class="who-desc">Средний бизнес 10–100 человек. Команда тратит часы на отчёты, которые никто не читает; CRM и таблицы не дружат.</div>
+          <div class="who-pain">боль: процессы съедают время</div>
+        </div>
+
+        <div class="who-card">
+          <div class="who-num">03 / Профиль</div>
+          <div class="wf-img who-img"><span>портрет</span></div>
+          <h3>Самозанятый</h3>
+          <div class="who-desc">Один на всех ролях. Счета, клиенты, налоги, контент — всё в голове, блокноте и трёх вкладках.</div>
+          <div class="who-pain">боль: рутина крадёт фокус</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 03 КАЛЬКУЛЯТОР ========== -->
+  <section class="section" id="calc">
+    <div class="section-head">
+      <span>03 / Калькулятор</span>
+      <span class="num">★ ключевая</span>
+    </div>
+
+    <div class="section-body">
+      <div class="section-title-block">
+        <div class="eyebrow">Прикинем стоимость</div>
+        <h2>Соберите задачу <em>— увидите цену.</em></h2>
+        <div class="lead">
+          Выберите типы задач и сложность, получите ориентир по бюджету и срокам. Точный расчёт — после созвона.
+        </div>
+      </div>
+
+      <div class="calc">
+        <!-- Левая часть: выбор задач -->
+        <div class="calc-left">
+          <h3>Что автоматизировать</h3>
+          <p class="calc-question">Выберите один или несколько вариантов</p>
+
+          <div class="calc-options" id="calc-options">
+            <div class="calc-opt selected" data-task="bot" onclick="toggleTask(this)"><div class="check"></div><div>Бот / чат-ассистент</div></div>
+            <div class="calc-opt" data-task="reports" onclick="toggleTask(this)"><div class="check"></div><div>Автоотчёты из таблиц</div></div>
+            <div class="calc-opt" data-task="parser" onclick="toggleTask(this)"><div class="check"></div><div>Парсер / сбор данных</div></div>
+            <div class="calc-opt" data-task="crm" onclick="toggleTask(this)"><div class="check"></div><div>CRM-связка</div></div>
+            <div class="calc-opt" data-task="dashboard" onclick="toggleTask(this)"><div class="check"></div><div>Внутренний дашборд</div></div>
+            <div class="calc-opt" data-task="custom" onclick="toggleTask(this)"><div class="check"></div><div>Свой вариант…</div></div>
+          </div>
+
+          <!-- Слайдер сложности -->
+          <div class="calc-block">
+            <div class="calc-block-head">
+              <span class="label">Сложность</span>
+              <span class="value" id="complexity-label">Средняя</span>
+            </div>
+            <div class="slider-wrap">
+              <div class="slider-track">
+                <div class="slider-fill" id="slider-fill" style="width:50%"></div>
+                <div class="slider-knob" id="slider-knob" style="left:50%"></div>
+              </div>
+              <input type="range" class="real-slider" id="complexity" min="0" max="2" value="1" step="1" oninput="updateSlider(this)">
+            </div>
+            <div class="slider-labels">
+              <span>Простой скрипт</span>
+              <span>Средний</span>
+              <span>Под ключ</span>
+            </div>
+          </div>
+
+          <!-- Доп. опции -->
+          <div class="calc-block">
+            <div class="calc-block-head">
+              <span class="label">Дополнительно</span>
+            </div>
+            <div class="calc-extras">
+              <div class="calc-extra" data-extra="urgent" onclick="toggleExtra(this)">+ Срочно</div>
+              <div class="calc-extra" data-extra="training" onclick="toggleExtra(this)">+ Обучение</div>
+              <div class="calc-extra" data-extra="support" onclick="toggleExtra(this)">+ Поддержка</div>
+              <div class="calc-extra" data-extra="integration" onclick="toggleExtra(this)">+ Интеграция</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Правая часть: результат -->
+        <div class="calc-right">
+          <h3>Примерная стоимость</h3>
+          <div class="price">
+            <div class="label">от</div>
+            <div class="value" id="price-value">15 000 ₽</div>
+            <div class="range" id="price-range">диапазон 15–25 тыс. ₽</div>
+          </div>
+
+          <div class="calc-meta">
+            <div class="calc-meta-row"><span class="k">Срок</span><span class="v" id="meta-days">~ 5 дней</span></div>
+            <div class="calc-meta-row"><span class="k">Экономит</span><span class="v" id="meta-hours">~ 8 часов / нед</span></div>
+            <div class="calc-meta-row"><span class="k">Окупится</span><span class="v" id="meta-payback">~ 2 мес</span></div>
+          </div>
+
+          <div class="calc-cta">
+            <button class="btn solid" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">
+              Получить точный расчёт <span class="arrow">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 04 КАК ЭТО РАБОТАЕТ ========== -->
+  <section class="section" id="how">
+    <div class="section-head">
+      <span>04 / Как это работает</span>
+      <span class="num">3 шага</span>
+    </div>
+
+    <div class="section-body">
+      <div class="section-title-block">
+        <div class="eyebrow">Процесс</div>
+        <h2>От заявки <em>до рабочего инструмента</em> — три шага.</h2>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-head">
+            <span class="step-num">Шаг 01</span>
+            <svg class="step-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h18v12H8l-5 5z"/></svg>
+          </div>
+          <h3>Расскажете задачу</h3>
+          <div class="desc">Короткий созвон или переписка — что болит, что хочется. Без ТЗ и без воды.</div>
+          <div class="meta">15–30 минут</div>
+        </div>
+
+        <div class="step">
+          <div class="step-head">
+            <span class="step-num">Шаг 02</span>
+            <svg class="step-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="14" x2="14" y2="14"/></svg>
+          </div>
+          <h3>Согласуем решение</h3>
+          <div class="desc">Фикс-смета, сроки, что войдёт. Никаких сюрпризов и расширений в процессе.</div>
+          <div class="meta">1–2 дня</div>
+        </div>
+
+        <div class="step">
+          <div class="step-head">
+            <span class="step-num">Шаг 03</span>
+            <svg class="step-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,12 9,18 21,4"/></svg>
+          </div>
+          <h3>Соберу и сдам</h3>
+          <div class="desc">За оговорённый срок получаете рабочий инструмент, инструкцию и месяц поддержки.</div>
+          <div class="meta">от 3 дней</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 05 ФИНАЛЬНЫЙ CTA ========== -->
+  <section class="section" id="cta">
+    <div class="section-head">
+      <span>05 / Финальный CTA</span>
+      <span class="num">конверсия</span>
+    </div>
+
+    <div class="final">
+      <div class="eyebrow">Начнём</div>
+      <h2>Хватит тратить <em>время на ручную работу.</em></h2>
+      <div class="sub">
+        Напишите в Telegram — обсудим задачу за 15 минут и получите точный расчёт уже на следующий день.
+      </div>
+      <div class="final-cta-row">
+        <button class="Btn" onclick="document.getElementById('calc').scrollIntoView({behavior:'smooth'})" aria-label="Рассчитать стоимость"></button>
+        <button class="button" type="button" onclick="window.open('https://t.me/', '_blank')">
+          <div class="state state--default">
+            <div class="icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 2L11 13" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p>
+              <span style="--i:0">Н</span><span style="--i:1">а</span><span style="--i:2">п</span><span style="--i:3">и</span><span style="--i:4">с</span><span style="--i:5">а</span><span style="--i:6">т</span><span style="--i:7">ь</span><span style="--i:8">&nbsp;</span><span style="--i:9">в</span><span style="--i:10">&nbsp;</span><span style="--i:11">T</span><span style="--i:12">e</span><span style="--i:13">l</span><span style="--i:14">e</span><span style="--i:15">g</span><span style="--i:16">r</span><span style="--i:17">a</span><span style="--i:18">m</span>
+            </p>
+          </div>
+          <div class="state state--sent">
+            <div class="icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 6L9 17L4 12" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p>
+              <span style="--i:0">О</span><span style="--i:1">т</span><span style="--i:2">п</span><span style="--i:3">р</span><span style="--i:4">а</span><span style="--i:5">в</span><span style="--i:6">л</span><span style="--i:7">е</span><span style="--i:8">н</span><span style="--i:9">о</span>
+            </p>
+          </div>
+          <div class="outline"></div>
+        </button>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div class="col">
+        <div class="brand-name">[ Вайбкодер ]</div>
+        <div>Автоматизация под ключ для малого и среднего бизнеса.</div>
+      </div>
+      <div class="col">
+        <h4>Навигация</h4>
+        <ul>
+          <li><a href="#who" style="color:inherit;text-decoration:none">Для кого</a></li>
+          <li><a href="#calc" style="color:inherit;text-decoration:none">Калькулятор</a></li>
+          <li><a href="#how" style="color:inherit;text-decoration:none">Как работает</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <h4>Контакты</h4>
+        <ul><li>Telegram</li><li>Email</li></ul>
+      </div>
+      <div class="col">
+        <h4>Юр.</h4>
+        <ul><li>Оферта</li><li>Политика</li><li>© 2026</li></ul>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // Базовые цены (руб.) по типам задач
+  const BASE = { bot: 15000, reports: 8000, parser: 12000, crm: 20000, dashboard: 25000, custom: 15000 };
+  // Множители сложности
+  const COMPLEXITY = [0.6, 1.0, 1.7];
+  const COMPLEXITY_LABELS = ['Простая', 'Средняя', 'Под ключ'];
+  // Доп. расходы
+  const EXTRAS = { urgent: 0.3, training: 5000, support: 8000, integration: 10000 };
+  // Примерные сроки (дни) по сложности
+  const DAYS_BASE = { bot: [2,5,10], reports: [1,3,7], parser: [2,4,8], crm: [3,7,14], dashboard: [4,10,20], custom: [3,7,14] };
+  // Экономия часов в неделю
+  const HOURS = { bot: 6, reports: 8, parser: 5, crm: 10, dashboard: 7, custom: 6 };
+
+  let selectedTasks = new Set(['bot']);
+  let complexity = 1;
+  let selectedExtras = new Set();
+
+  function toggleTask(el) {
+    const task = el.dataset.task;
+    if (selectedTasks.has(task)) {
+      if (selectedTasks.size === 1) return; // минимум одна задача
+      selectedTasks.delete(task);
+      el.classList.remove('selected');
+    } else {
+      selectedTasks.add(task);
+      el.classList.add('selected');
     }
-  </script>
+    recalc();
+  }
+
+  function toggleExtra(el) {
+    const extra = el.dataset.extra;
+    if (selectedExtras.has(extra)) {
+      selectedExtras.delete(extra);
+      el.classList.remove('active');
+    } else {
+      selectedExtras.add(extra);
+      el.classList.add('active');
+    }
+    recalc();
+  }
+
+  function updateSlider(input) {
+    complexity = parseInt(input.value);
+    const pct = (complexity / 2) * 100;
+    document.getElementById('slider-fill').style.width = pct + '%';
+    document.getElementById('slider-knob').style.left = pct + '%';
+    document.getElementById('complexity-label').textContent = COMPLEXITY_LABELS[complexity];
+    recalc();
+  }
+
+  function fmt(n) {
+    // Форматирование числа: 15000 → "15 000 ₽"
+    return n.toLocaleString('ru-RU') + ' ₽';
+  }
+
+  function recalc() {
+    // Базовая сумма — сумма по выбранным задачам
+    let base = 0;
+    let totalHours = 0;
+    let maxDays = 0;
+    selectedTasks.forEach(task => {
+      base += BASE[task];
+      totalHours += HOURS[task];
+      const d = DAYS_BASE[task][complexity];
+      if (d > maxDays) maxDays = d;
+    });
+
+    // Применяем множитель сложности
+    let price = Math.round(base * COMPLEXITY[complexity]);
+
+    // Срочность — множитель
+    if (selectedExtras.has('urgent')) price = Math.round(price * 1.3);
+    // Фиксированные надбавки
+    if (selectedExtras.has('training')) price += 5000;
+    if (selectedExtras.has('support')) price += 8000;
+    if (selectedExtras.has('integration')) price += 10000;
+
+    // Диапазон ±20%
+    const lo = Math.round(price * 0.85 / 1000) * 1000;
+    const hi = Math.round(price * 1.2 / 1000) * 1000;
+
+    // Срок с учётом срочности
+    let days = maxDays;
+    if (selectedExtras.has('urgent')) days = Math.max(1, Math.round(days * 0.6));
+
+    // Окупаемость: price / (hourlyRate * totalHours * 4 недели)
+    const hourlyRate = 800; // средняя ставка рутинного труда, руб./час
+    const monthlyValue = totalHours * hourlyRate * 4;
+    const payback = monthlyValue > 0 ? Math.ceil(price / monthlyValue) : 1;
+
+    // Обновляем DOM
+    document.getElementById('price-value').textContent = fmt(price);
+    document.getElementById('price-range').textContent = `диапазон ${Math.round(lo/1000)}–${Math.round(hi/1000)} тыс. ₽`;
+    document.getElementById('meta-days').textContent = `~ ${days} ${dayWord(days)}`;
+    document.getElementById('meta-hours').textContent = `~ ${totalHours} ч / нед`;
+    document.getElementById('meta-payback').textContent = `~ ${payback} ${monthWord(payback)}`;
+  }
+
+  function dayWord(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return 'день';
+    if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'дня';
+    return 'дней';
+  }
+  function monthWord(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return 'мес';
+    if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'мес';
+    return 'мес';
+  }
+
+  // Первичный расчёт при загрузке
+  recalc();
+</script>
 
 </body>
 </html>
