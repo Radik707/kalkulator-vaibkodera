@@ -820,26 +820,70 @@
     .nav { padding: 12px 16px; }
     .nav .btn.sm { display: none; }
 
-    /* Hero */
-    .hero .cta-row { flex-wrap: wrap; gap: 12px; }
-    .hero-strip {
-      grid-template-columns: 1fr;
-      margin: 0 -20px -28px;
-    }
-    .hero-strip .cell { min-height: auto; padding: 14px 20px; }
+    /* Шапка каждой секции */
+    .section-head { padding: 10px 16px; }
 
-    /* Для кого — 1 колонка */
-    .who-grid { grid-template-columns: 1fr; }
-    .who-card { padding: 24px 20px; }
+    /* Подзаголовки */
+    .final .sub { font-size: 16px; }
+    .section-title-block .lead { font-size: 15px; }
     .section-title-block { margin-bottom: 32px; }
 
-    /* Калькулятор */
+    /* Hero CTA */
+    .hero .cta-row { flex-wrap: wrap; gap: 12px; }
+
+    /* Иконки Hero — горизонтальная прокрутка (1 ряд, свайп) */
+    .hero-strip {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      margin: 0 -20px -28px;
+    }
+    .hero-strip::-webkit-scrollbar { display: none; }
+    .hero-strip .cell {
+      flex: 0 0 110px;
+      min-height: auto;
+      padding: 14px 12px;
+      gap: 8px;
+      scroll-snap-align: start;
+      border-bottom: none;
+      border-right: 1px solid var(--line-2);
+    }
+    .hero-strip .cell .name { font-size: 13px; }
+    .hero-strip .cell .ico { width: 22px; height: 22px; }
+
+    /* Карточки «Для кого» — 2×2 */
+    .who-grid { grid-template-columns: repeat(2, 1fr); }
+    .who-card { padding: 20px 16px; }
+    .who-card h3 { min-height: auto; font-size: 20px; }
+    .who-card .who-desc { font-size: 13px; }
+
+    /* Калькулятор: цена — наверх, потом настройки */
+    .calc { display: flex; flex-direction: column; }
+    .calc-right { order: -1; }
+    .calc-left, .calc-right { padding: 22px 18px; }
     .calc-options { grid-template-columns: 1fr; }
-    .calc-left, .calc-right { padding: 24px 20px; }
-    /* Кнопка «Получить расчёт» — на всю ширину */
     .calc-cta .btn { width: 100%; justify-content: center; }
 
-    /* Фиксированные ширины кнопок → растягиваем */
+    /* Сворачиваемый блок доп. опций */
+    .calc-extras-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .calc-extras-toggle .toggle-arrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+    .calc-extras-section.collapsed .calc-extras { display: none; }
+    .calc-extras-section.collapsed .toggle-arrow { transform: rotate(-90deg); }
+
+    /* Кнопки фиксированной ширины → растягиваем */
     .Btn { width: 100%; max-width: 320px; }
     .button { min-width: 0; width: 100%; max-width: 320px; }
 
@@ -849,18 +893,17 @@
     /* Шаги */
     .step { padding: 24px 20px; }
 
-    /* Шапка каждой секции — убираем лишний горизонтальный padding */
-    .section-head { padding: 10px 16px; }
-
-    /* min-height у заголовков карточек нужен только для 4-кол сетки */
-    .who-card h3 { min-height: auto; font-size: 22px; }
-
-    /* Подзаголовки — чуть компактнее */
-    .final .sub { font-size: 16px; }
-    .section-title-block .lead { font-size: 15px; }
-
-    /* Футер — 1 колонка */
-    .foot { grid-template-columns: 1fr; padding: 32px 16px; }
+    /* Футер — бренд на всю ширину, затем 2 колонки */
+    .foot {
+      grid-template-columns: 1fr 1fr;
+      padding: 24px 16px;
+      gap: 20px;
+    }
+    .foot .col:first-child {
+      grid-column: span 2;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line-2);
+    }
   }
 </style>
 </head>
@@ -1058,10 +1101,11 @@
             </div>
           </div>
 
-          <!-- Доп. опции -->
-          <div class="calc-block">
-            <div class="calc-block-head">
+          <!-- Доп. опции — сворачиваются на мобильном -->
+          <div class="calc-block calc-extras-section" id="calc-extras-section">
+            <div class="calc-block-head calc-extras-toggle" onclick="toggleExtrasSection()">
               <span class="label">Дополнительно</span>
+              <span class="toggle-arrow">▼</span>
             </div>
             <div class="calc-extras">
               <div class="calc-extra" data-extra="urgent" onclick="toggleExtra(this)">+ Срочно</div>
@@ -1351,8 +1395,22 @@
     return 'мес';
   }
 
+  // Сворачивание блока «Дополнительно» на мобильном
+  function toggleExtrasSection() {
+    if (window.innerWidth > 600) return;
+    document.getElementById('calc-extras-section').classList.toggle('collapsed');
+  }
+
+  // На мобильном стартуем со свёрнутыми опциями
+  function initMobileCollapse() {
+    if (window.innerWidth <= 600) {
+      document.getElementById('calc-extras-section').classList.add('collapsed');
+    }
+  }
+
   // Первичный расчёт при загрузке
   recalc();
+  initMobileCollapse();
 
   // Ссылки на мессенджеры
   const MSG = encodeURIComponent('Добрый день, Олег.\nХочу обсудить автоматизацию процессов в моём деле.\nРассчитал(а) примерную стоимость на сайте — хотел(а) бы получить точный расчёт.');
