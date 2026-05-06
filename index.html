@@ -447,6 +447,8 @@
     cursor: pointer;
     height: 30px;
     margin: 0;
+    /* вертикальный скролл проходит сквозь слайдер, горизонтальный — двигает его */
+    touch-action: pan-y;
   }
   .slider-labels {
     display: flex;
@@ -893,17 +895,19 @@
     /* Шаги */
     .step { padding: 24px 20px; }
 
-    /* Футер — бренд на всю ширину, затем 2 колонки */
+    /* Футер — бренд на всю ширину, затем 3 колонки (навигация | контакты | юр.) */
     .foot {
-      grid-template-columns: 1fr 1fr;
-      padding: 24px 16px;
-      gap: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 20px 16px;
+      gap: 16px 8px;
     }
     .foot .col:first-child {
-      grid-column: span 2;
-      padding-bottom: 16px;
+      grid-column: span 3;
+      padding-bottom: 14px;
       border-bottom: 1px solid var(--line-2);
     }
+    .foot .col h4 { margin-bottom: 8px; font-size: 10px; }
+    .foot .col ul { gap: 5px; font-size: 12px; }
   }
 </style>
 </head>
